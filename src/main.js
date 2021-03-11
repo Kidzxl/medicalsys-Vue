@@ -21,7 +21,7 @@ axios.interceptors.request.use(config => {
   // config.headers.token = "123123"
   return config
 })
-axios.defaults.baseURL="http://localhost:9696/"
+axios.defaults.baseURL="http://localhost:9696/";
 
 new Vue({
   el: '#app',
