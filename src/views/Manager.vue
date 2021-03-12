@@ -214,10 +214,10 @@
                 </el-select>
               </el-form-item>
               <el-form-item>
-                <el-button type="primary" icon="el-icon-search" @click="searchMe">搜索</el-button>
+                <el-button type="primary" icon="el-icon-search" @click="getSectionAll">搜索</el-button>
               </el-form-item>
               <el-form-item>
-                <el-button @click="resetForm('meConditionForm')">重置</el-button>
+                <el-button @click="resetForm('seForm')">重置</el-button>
               </el-form-item>
               <el-form-item>
                   <el-button type="primary" @click="insertMedicine = true" >增加科室</el-button>
@@ -557,6 +557,13 @@
                medicineName:null,
            }
          }
+         if(formName == "seForm"){
+           this.sectionCondition = {
+             departmentId:null,
+               page:1,
+               pageSize:10,
+           }
+         }
       },
       searchMe(){
         //搜索药品 分页
@@ -834,6 +841,7 @@
 //            });
         }
         if(this.seAc){
+          this.getDepartmentAll();
           this.getSectionAll();
         }
       },

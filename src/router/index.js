@@ -6,6 +6,7 @@ import Login from '@/views/Login'
 import Register from '@/views/Register'
 import Doctor from '@/views/Doctor'
 import Patient from '@/views/Patient'
+import Header from '@/views/Header'
 
 Vue.use(Router)
 
@@ -36,6 +37,10 @@ export default new Router({
       path:'/doctor',
       name:"Doctor",
       component: Doctor
+    },{
+      path:'/header',
+      name:"Header",
+      component: Header
     }
   ]
 })
