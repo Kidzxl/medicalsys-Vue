@@ -1,6 +1,7 @@
 <template>
   <div>
     <el-container style="border: 1px solid #eee">
+<!--      导航-->
       <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
         <el-menu :default-openeds="['1', '2', '3']">
           <el-submenu index="1">
@@ -19,9 +20,15 @@
             </el-menu-item-group>
           </el-submenu>
           <el-submenu index="3">
-            <template slot="title"><i class="el-icon-setting"></i>商品管理</template>
+            <template slot="title"><i class="el-icon-setting"></i>科室部门</template>
             <el-menu-item-group>
-              <el-menu-item index="3-1" @click="activeFunc(3)">商品管理</el-menu-item>
+              <el-menu-item index="3-1" @click="activeFunc(4)">科室管理</el-menu-item>
+            </el-menu-item-group>
+          </el-submenu>
+          <el-submenu index="4">
+            <template slot="title"><i class="el-icon-setting"></i>订单中心</template>
+            <el-menu-item-group>
+              <el-menu-item index="4-1" @click="activeFunc(5)">订单管理</el-menu-item>
             </el-menu-item-group>
           </el-submenu>
         </el-menu>
@@ -32,7 +39,7 @@
           <span>管理员</span>
         </el-header>
 
-        <el-main style="padding: 0;" v-show="userAc">
+        <el-main style="padding: 0;" v-show="userAc" title="账号管理">
           <el-table :data="userList">
             <el-table-column prop="nickname" label="真实姓名"> </el-table-column>
             <el-table-column prop="username" label="账号"> </el-table-column>
@@ -59,7 +66,7 @@
             </el-table-column>
           </el-table>
         </el-main>
-        <el-main style="padding:0;" v-show="doctorAc">
+        <el-main style="padding:0;" v-show="doctorAc" title="医生激活">
           <el-table
             :data="doctors.result"
             style="width: 100%">
@@ -101,7 +108,7 @@
           </el-pagination>
 
         </el-main>
-        <el-main style="padding: 0;" v-show="meAc">
+        <el-main style="padding: 0;" v-show="meAc" title="药品管理">
           <div style="margin-top:10px;">
             <el-form :model="meCondition" :inline="true" label-width="80px" class="demo-ruleForm" ref="meConditionForm">
             <el-form-item label="部门" prop="department">
@@ -193,14 +200,77 @@
             </div>
           </div>
         </el-main>
+        <el-main style="padding: 0;" v-show="seAc" title="科室管理">
+          <div style="margin-top:10px;">
+            <el-form :inline="true" :model="sectionCondition">
+              <el-form-item >
+                <el-select v-model="sectionCondition.departmentId" placeholder="按部门搜索" style="width: 200px;">
+                  <el-option
+                    v-for="department in departments"
+                    :key="department.id"
+                    :label="department.departmentName"
+                    :value="department.id">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item>
+                <el-button type="primary" icon="el-icon-search" @click="searchMe">搜索</el-button>
+              </el-form-item>
+              <el-form-item>
+                <el-button @click="resetForm('meConditionForm')">重置</el-button>
+              </el-form-item>
+              <el-form-item>
+                  <el-button type="primary" @click="insertMedicine = true" >增加科室</el-button>
+              </el-form-item>
+            </el-form>
+          </div>
+          <div>
+            <el-table
+              :data="sectionData.result"
+              style="width: 100%">
+              <el-table-column
+                prop="id"
+                label="序号"
+                width="50">
+              </el-table-column>
+              <el-table-column
+                prop="departmentName"
+                label="部门"
+                width="180">
+              </el-table-column>
+              <el-table-column
+                prop="sectionName"
+                label="科室"
+                width="180">
+              </el-table-column>
+              <el-table-column prop="id" label="操作">
+                <template slot-scope="seScope">
+                  <el-button
+                    @click="deleteMe(seScope.row.id)"
+                    type="text"
+                    size="small">删除</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+            <div>
+              <el-pagination
+                :hide-on-single-page="true"
+                background
+                @current-change="sePage"
+                :current-page="1"
+                layout="prev, pager, next"
+                :page-size="10"
+                :total="sectionData.totalSize">
+              </el-pagination>
+            </div>
+          </div>
+        </el-main>
       </el-container>
     </el-container>
-    <el-drawer
-      title="修改用户信息"
-      :visible.sync="userDrawer"
-      direction="ttb"
-      :before-close="handleClose"
-    >
+
+
+<!--    弹出窗口  -->
+    <el-drawer title="修改用户信息" :visible.sync="userDrawer" direction="ttb" :before-close="handleClose">
       <el-form
         :inline="true"
         size="small "
@@ -225,7 +295,6 @@
         </el-form-item>
       </el-form>
     </el-drawer>
-
     <el-dialog title="增加药品" :visible.sync="insertMedicine">
       <div>
         <el-form :model="insertMedicineData" :inline="true" :rules="insertMedicineRules" ref="insertMedicine">
@@ -402,6 +471,7 @@
         userAc: true,
         meAc: false,
         doctorAc:false,
+        seAc:false,
         insertMedicineRules: {
           department: [
             { required: true,validator: departmentV, trigger: 'blur' },
@@ -443,7 +513,16 @@
           price:null,
           sectionId:null,
           sectionName:null,
-        }
+        },
+        sectionCondition:{
+          departmentId:null,
+          page:1,
+          pageSize:10,
+        },
+        sectionData:{
+          result:[],
+          totalSize :0,
+        },
       };
     },
     watch: {
@@ -459,12 +538,16 @@
       "insertMedicineData.departmentId": {
         handler(newValue){
           this.insertMedicineData.sectionId = null;
-          this.getSectionByDepartmentId(this.insertMedicineData.departmentId);
+          if(this.insertMedicineData.departmentId != null && this.insertMedicineData.departmentId != 0 ){
+            this.getSectionByDepartmentId(this.insertMedicineData.departmentId);
+          }
+
         }
       },
     },
     methods: {
       resetForm(formName) {
+        //重置表单
          if(formName == "meConditionForm"){
            this.meCondition={
              departmentId:null,
@@ -476,6 +559,7 @@
          }
       },
       searchMe(){
+        //搜索药品 分页
         this.meCondition.page = 1;
         this.meCondition.pageSize = 10;
         this.getMedicineAll();
@@ -484,12 +568,20 @@
          this.meCondition.page = val;
          this.getMedicineAll();
       },
+      sePage(val){
+        this.sectionCondition.page = val;
+        this.sectionCondition.pageSize = 10;
+        this.getSectionAll();
+      },
       reMe(obj){
+        // 编辑药品弹窗打开
         this.editMe = true;
-        this.editVo = obj;
+        var objString = JSON.stringify(obj);
+        this.editVo = JSON.parse(objString);
         this.getSectionByDepartmentId(obj.departmentId);
       },
       deleteMe(id){
+        //删除药品
           var that = this;
         axios({
           method: 'delete',
@@ -509,6 +601,7 @@
         })
       },
       insertMedicineClick(formName){
+        //新增药品点击事件提交
         this.$refs[formName].validate((valid) => {
           if (valid) {
             var that = this;
@@ -544,6 +637,7 @@
         })
       },
       editMedicineClick(formName){
+        // 编辑药品点击提交
         this.$refs[formName].validate((valid) => {
           if (valid) {
             var that = this;
@@ -583,6 +677,7 @@
         })
       },
       getMedicineAll(){
+        //根据条件获取药品
         var that = this;
         var data = JSON.stringify(that.meCondition)
         axios({
@@ -593,7 +688,6 @@
           url: "medicine/getMedicineAll",
           data:data
         }).then(response=>{
-          console.log(response)
           if(response.data.code == 200 ){
             that.medicineAllData = response.data.data;
           }else{
@@ -607,6 +701,7 @@
         })
       },
       getDepartmentAll(){
+        //获取所有部门
         var that = this;
         axios({
           method: 'get',
@@ -622,6 +717,7 @@
         })
       },
       getSectionByDepartmentId(id){
+        //根据部门id 获取所有科室
         var that = this;
         axios({
           method: 'get',
@@ -637,6 +733,7 @@
         })
       },
       activeDoctor(id){
+        // 激活医生
         var that = this;
         axios({
           method: "get",
@@ -656,21 +753,31 @@
           });
       },
       activeFunc(idx) {
+        // 左边导航激活函数
         switch (idx) {
           case 1:
             this.userAc = true;
             this.doctorAc = false;
             this.meAc = false;
+            this.seAc = false;
             break;
           case 2:
             this.userAc = false;
             this.doctorAc = true;
             this.meAc = false;
+            this.seAc = false;
             break;
           case 3:
             this.userAc = false;
             this.doctorAc = false;
             this.meAc = true;
+            this.seAc = false;
+            break;
+          case 4:
+            this.userAc = false;
+            this.doctorAc = false;
+            this.meAc = false;
+            this.seAc = true;
             break;
         }
         if (this.userAc) {
@@ -726,8 +833,12 @@
 //              alert("失败");
 //            });
         }
+        if(this.seAc){
+          this.getSectionAll();
+        }
       },
-      formatBoolean: function (row, column, cellValue) {
+      formatBoolean(row, column, cellValue) {
+        //格式化 Boolean 是 -- 否
         var ret = ""; //你想在页面展示的值
         if (cellValue) {
           ret = "是"; //根据自己的需求设定
@@ -737,6 +848,7 @@
         return ret;
       },
       formatActive(row, column, cellValue) {
+        // 格式化Boolean  正在使用 -- 已经删除
         var ret = "";
         if(cellValue){
             ret = "正在使用";
@@ -746,6 +858,7 @@
         return ret;
       },
       init() {
+        // 获取所有用户
         var that = this;
         axios({
           method: "get",
@@ -761,11 +874,13 @@
           });
       },
       edit(obj) {
+        // 编辑用户
         this.userDrawer = true;
         var objString = JSON.stringify(obj);
         this.editUser = JSON.parse(objString);
       },
       deleteUser(idx) {
+        // 删除用户
         console.log(idx);
         var that = this;
         axios({
@@ -783,6 +898,7 @@
           });
       },
       handleClose(done) {
+        // 用户编辑窗口 关闭
         var that = this;
         this.$confirm("确认关闭？")
           .then((_) => {
@@ -800,6 +916,7 @@
           .catch((_) => {});
       },
       checkEdit() {
+        // 用户编辑提交
         var data = this.editUser;
         var that = this;
 
@@ -821,6 +938,30 @@
             alert("失败");
           });
       },
+      getSectionAll(){
+        var that = this;
+        var data = JSON.stringify(that.sectionCondition)
+        axios({
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          method: 'post',
+          url: "section/getSectionAll",
+          data:data
+        }).then(response=>{
+          console.log(response)
+          if(response.data.code == 200 ){
+            that.sectionData = response.data.data;
+          }else{
+            this.medicineAllData={
+              result:[],
+              totalSize :0,
+            }
+          }
+        }).catch(error=>{
+          alert("失败")
+        })
+      }
     },
     mounted() {
       this.init();
