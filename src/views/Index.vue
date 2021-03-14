@@ -1,12 +1,14 @@
 <template>
-    <div>主页</div>
+    <div>
+      <Header></Header>
+    </div>
 </template>
 
 <script>
-
+  import Header from "./Header";
     export default {
         //import引入的组件需要注入到对象中才能使用",
-        components: {},
+        components: {Header},
         data() {
             //这里存放数据",
             return {};

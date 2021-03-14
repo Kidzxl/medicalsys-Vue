@@ -41,9 +41,10 @@
 
         //生命周期 - 挂载完成（可以访问DOM元素）",html模板已渲染
         mounted() {
+
           var user = window.sessionStorage.getItem("user");
           if(user == null ){
-              alert("请登录")
+              alert("请登录");
             this.$router.push('/login')
           }else{
               this.user = JSON.parse(user);
