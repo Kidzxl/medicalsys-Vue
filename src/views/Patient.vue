@@ -420,9 +420,10 @@
               url: "medicareCard/createMyCard",
             }).then(response=>{
               if(response.data.code == 200 ){
-                that.getMyCard();
+                that.getMyCardClick();
               }
             }).catch(error=>{
+                console.log(error)
               alert("失败")
             })
           },
@@ -469,6 +470,7 @@
                     appointmentTime:null,
                     doctorId:null,
                 };
+                that.getMedicineHistory();
               }else{
                 console.log("失败")
               }

@@ -179,17 +179,18 @@
 </script>
 <style>
   #concent{
-    /*background: url("./../img/login_bg.jpg");*/
+    background: url("../assets/img/login_bg.jpg");
     background-size: 100% auto;
     background-position: center center;
-    width: 5%;
-    height: 210px;
+    width: 100%;
+    height: 100vh;
     margin: 0 auto;
-    margin-top: 20%;
+    /*margin-top: 20%;*/
     /*width: 100%;*/
     /*height: 100vh;*/
   }
   .login_form{
+    position: absolute;
     width: 480px;
     height: 345px;
     background: #FFF;

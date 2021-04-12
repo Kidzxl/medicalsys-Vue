@@ -1,14 +1,15 @@
 <template>
-    <div>
-      <Header></Header>
+    <div id="myiframe">
+      <iframe width="100%"  height="100%" src="../../static/index.html" frameborder="0" scrolling="yes"></iframe>
     </div>
 </template>
 
 <script>
-  import Header from "./Header";
+  import $ from 'jquery'
+
     export default {
         //import引入的组件需要注入到对象中才能使用",
-        components: {Header},
+        components: {},
         data() {
             //这里存放数据",
             return {};
@@ -34,7 +35,18 @@
 
         //生命周期 - 挂载完成（可以访问DOM元素）",html模板已渲染
         mounted() {
-
+          $(document).ready(function(){
+            //高度设置
+            var height = $(window).height();
+            $('#myiframe').height(height);
+          })
+          function changeFrameHeight(){
+            var ifm= document.getElementById("myiframe");
+            $('#myiframe').height($(window).height());
+          }
+          window.onresize=function(){
+            changeFrameHeight();
+          }
         },
 
         //生命周期 - 更新之前",数据模型已更新,html模板未更新

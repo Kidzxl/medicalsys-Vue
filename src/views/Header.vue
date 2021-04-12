@@ -1,13 +1,49 @@
 <template>
     <div>
       <div style="width:100%;height: 80px;background-color:#16b7ff;">
-        <div style="float: right;font-size: 20px;padding-top:20px;padding-right:20px;">欢迎你，{{user.nickname}}</div>
+        <el-dropdown style="float: right;padding-top:20px;padding-right:20px;">
+            <span class="el-dropdown-link" style="font-size: 20px;">
+              欢迎你，{{user.nickname}}<i class="el-icon-arrow-down el-icon--right"></i>
+            </span>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item ><span @click="drawer = true">修改个人信息</span></el-dropdown-item>
+            <el-dropdown-item ><span @click="loginOut()">退出登录</span></el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
       </div>
+      <el-drawer
+        title="修改个人信息"
+        :visible.sync="drawer"
+        direction="rtl"
+        :before-close="handleClose">
+
+        <el-form :model="user" ref="userForm" label-width="100px" class="demo-ruleForm">
+          <el-form-item label="用户名" prop="pass">
+            <el-input type="text" v-model="user.username" readonly="readonly" autocomplete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="真实姓名" prop="nickname">
+            <el-input type="text" v-model="user.nickname" autocomplete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="密码" prop="password">
+            <el-input type="text" v-model="user.password" autocomplete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="年龄" prop="age">
+            <el-input v-model.number="user.age"></el-input>
+          </el-form-item>
+          <el-form-item label="身份证" prop="card">
+            <el-input v-model="user.card"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="submitForm('ruleForm')">提交</el-button>
+            <el-button @click="resetForm('ruleForm')">重置</el-button>
+          </el-form-item>
+        </el-form>
+      </el-drawer>
     </div>
 </template>
 
 <script>
-
+  import axios from 'axios'
     export default {
         name:"Header",
         //import引入的组件需要注入到对象中才能使用",
@@ -15,6 +51,8 @@
         data() {
             //这里存放数据",
             return {
+              changePassword:false,
+              drawer:false,
                 user:{
                     nickname:null,
                 },
@@ -25,7 +63,53 @@
         //监控data中的数据变化",
         watch: {},
         //方法集合",
-        methods: {},
+        methods: {
+          loginOut(){
+            window.sessionStorage.clear("token");
+            this.$router.push("/login")
+          },
+          submitForm(formName) {
+            var that = this;
+            var data = JSON.stringify(that.user)
+            axios({
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              method: 'post',
+              url: "user/updateUser",
+              data:data
+            }).then(response=>{
+              if(response.data.code === 200){
+                this.$message({
+                  message: '修改成功',
+                  type: 'success'
+                });
+                var user = window.sessionStorage.getItem("user");
+                user = JSON.parse(user);
+                console.log(user);
+                console.log(that.user)
+                if(that.user.password != user.password){
+                  this.$router.push('/')
+                }else{
+                  window.sessionStorage.setItem("user",JSON.stringify(that.user))
+                }
+                that.drawer = false;
+              }
+            }).catch(error=>{
+              alert("失败")
+            })
+          },
+          handleClose(done) {
+            this.$confirm('确认关闭？')
+              .then(_ => {
+                done();
+              })
+              .catch(_ => {});
+          },
+          resetForm(formName) {
+            this.$refs[formName].resetFields();
+          }
+        },
         //生命周期 - 创建之前",数据模型未加载,方法未加载,html模板未加载
         beforeCreate() {
         },
@@ -45,7 +129,7 @@
           var user = window.sessionStorage.getItem("user");
           if(user == null ){
               alert("请登录");
-            this.$router.push('/login')
+            this.$router.push('/')
           }else{
               this.user = JSON.parse(user);
           }

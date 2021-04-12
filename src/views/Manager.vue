@@ -3,7 +3,7 @@
     <el-container style="border: 1px solid #eee">
 <!--      导航-->
       <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
-        <el-menu :default-openeds="['1', '2', '3']">
+        <el-menu :default-openeds="['1', '2', '3','4','5']">
           <el-submenu index="1">
             <template slot="title"><i class="el-icon-message"></i>用户管理</template>
             <el-menu-item-group>
@@ -11,6 +11,9 @@
             </el-menu-item-group>
             <el-menu-item-group>
               <el-menu-item index="1-2" @click="activeFunc(2)">医生激活</el-menu-item >
+            </el-menu-item-group>
+            <el-menu-item-group>
+              <el-menu-item index="1-3" @click="activeFunc(5)">医生管理</el-menu-item >
             </el-menu-item-group>
           </el-submenu>
           <el-submenu index="2">
@@ -28,7 +31,13 @@
           <el-submenu index="4">
             <template slot="title"><i class="el-icon-setting"></i>订单中心</template>
             <el-menu-item-group>
-              <el-menu-item index="4-1" @click="activeFunc(5)">订单管理</el-menu-item>
+              <el-menu-item index="4-1" @click="activeFunc(6)">订单管理</el-menu-item>
+            </el-menu-item-group>
+          </el-submenu>
+          <el-submenu index="5">
+            <template slot="title"><i class="el-icon-setting"></i>病历中心</template>
+            <el-menu-item-group>
+              <el-menu-item index="5-1" @click="activeFunc(7)">病历</el-menu-item>
             </el-menu-item-group>
           </el-submenu>
         </el-menu>
@@ -36,12 +45,22 @@
 
       <el-container>
         <el-header style="text-align: right; font-size: 12px">
-          <span>管理员</span>
+          <el-dropdown>
+            <span class="el-dropdown-link" >
+              欢迎你，管理员<i class="el-icon-arrow-down el-icon--right"></i>
+            </span>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item ><span @click="loginOut">退出登录</span></el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
         </el-header>
 
         <el-main style="padding: 0;" v-show="userAc" title="账号管理">
           <el-table :data="userList">
             <el-table-column prop="nickname" label="真实姓名"> </el-table-column>
+            <el-table-column prop="sex" label="性别"> </el-table-column>
+            <el-table-column prop="age" label="年龄"> </el-table-column>
+            <el-table-column prop="card" label="身份证"> </el-table-column>
             <el-table-column prop="username" label="账号"> </el-table-column>
             <el-table-column prop="password" label="密码"> </el-table-column>
             <el-table-column prop="active" label="是否激活" :formatter="formatActive"> </el-table-column>
@@ -265,6 +284,146 @@
             </div>
           </div>
         </el-main>
+        <el-main style="padding:0;" v-show="doAc" title="医生管理">
+          <el-table
+            :data="doctorAndResource"
+            style="width: 100%">
+            <el-table-column
+              prop="doctorVo"
+              label="姓名"
+              width="180">
+              <template slot-scope="userScope">
+                <span>{{userScope.row.doctorVo.nickname}}</span>
+              </template>
+            </el-table-column>
+            <el-table-column
+              prop="doctorVo"
+              label="部门"
+              width="180">
+              <template slot-scope="departmentScope">
+                <span>{{departmentScope.row.doctorVo.department}}</span>
+              </template>
+            </el-table-column>
+            <el-table-column
+              prop="doctorVo"
+              label="科室"
+              width="180">
+              <template slot-scope="sectionScope">
+                <span>{{sectionScope.row.doctorVo.section}}</span>
+              </template>
+            </el-table-column>
+            <el-table-column
+              prop="doctorVo"
+              label="资源上限">
+              <template slot-scope="resourcesScope">
+                <span>{{resourcesScope.row.resources.upperLimit}}</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="id" label="操作">
+              <template slot-scope="editScope">
+                <el-button
+                  @click="editResource(editScope.row)"
+                  type="text"
+                  size="small">编辑资源上限</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-main>
+        <el-main style="padding: 0;" v-show="orderAc" title="订单管理">
+          <el-table
+            :data="orderData.result"
+            style="width: 100%">
+            <el-table-column
+              prop="id"
+              label="订单id">
+            </el-table-column>
+            <el-table-column
+              prop="nickname"
+              label="用户">
+            </el-table-column>
+            <el-table-column
+              prop="medicalHistoryId"
+              label="病史id">
+            </el-table-column>
+            <el-table-column
+              prop="payStatus"
+              label="支付状态">
+            </el-table-column>
+            <el-table-column
+              prop="total"
+              label="支付金额">
+            </el-table-column>
+             <el-table-column
+              prop="medicines"
+              label="药品">
+               <template slot-scope="medicinesScope">
+                 <el-table :data=" medicinesScope.row.medicines">
+                   <el-table-column
+                     prop="medicineName"
+                     label="药品名字">
+                   </el-table-column>
+                   <el-table-column
+                     prop="price"
+                     label="价格">
+                   </el-table-column>
+                 </el-table>
+               </template>
+            </el-table-column>
+
+          </el-table>
+            <div>
+              <el-pagination
+                :hide-on-single-page="true"
+                background
+                @current-change="orderPage"
+                :current-page="1"
+                layout="prev, pager, next"
+                :page-size="10"
+                :total="orderData.totalSize">
+              </el-pagination>
+            </div>
+        </el-main>
+        <el-main style="padding: 0;" v-show="historyAc" title="病历管理">
+          <el-table
+            :data="hisData.result"
+            style="width: 100%">
+            <el-table-column
+              prop="doctorName"
+              label="医生"
+              width="180">
+            </el-table-column>
+            <el-table-column
+              prop="username"
+              label="用户"
+              width="180">
+            </el-table-column>
+            <el-table-column
+              prop="illness"
+              label="病情"
+              width="180">
+            </el-table-column>
+            <el-table-column
+              prop="result"
+              label="处方"
+              width="180">
+            </el-table-column>
+            <el-table-column
+              prop="status"
+              label="状态">
+            </el-table-column>
+          </el-table>
+            <div>
+              <el-pagination
+                :hide-on-single-page="true"
+                background
+                @current-change="historyPage"
+                :current-page="1"
+                layout="prev, pager, next"
+                :page-size="10"
+                :total="hisData.totalSize">
+              </el-pagination>
+            </div>
+        </el-main>
       </el-container>
     </el-container>
 
@@ -428,6 +587,7 @@
 
         };
       return {
+        doctorAndResource:null,
         editMe:false,
         userList: null,
         orderList: null,
@@ -472,6 +632,9 @@
         meAc: false,
         doctorAc:false,
         seAc:false,
+        doAc:false,
+        orderAc:false,
+        historyAc:false,
         insertMedicineRules: {
           department: [
             { required: true,validator: departmentV, trigger: 'blur' },
@@ -523,6 +686,22 @@
           result:[],
           totalSize :0,
         },
+        hisPage:{
+            page:1,
+            pageSize:10
+        },
+        hisData:{
+            result:[],
+          totalSize:0,
+        },
+        ordPage:{
+            page:1,
+            pageSize:10
+        },
+        orderData:{
+            result:[],
+          totalSize:0,
+        }
       };
     },
     watch: {
@@ -546,6 +725,46 @@
       },
     },
     methods: {
+      loginOut(){
+        this.$router.push("/login")
+      },
+      editResource(obj){
+        var that = this;
+        this.$prompt('请输入要修改的数值', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          inputPattern:/(^[1-9]\d*$)/,
+          inputErrorMessage: '请输入正整数'
+        }).then(({value}) => {
+          obj.resources.upperLimit = value;
+
+          var data = JSON.stringify(obj);
+          axios({
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            method: 'post',
+            url: "doctor/updateDoctorAndResource",
+            data:data
+          }).then(response=>{
+            if(response.data.code == 200 ){
+              this.$message({
+                type: 'success',
+                message: '修改成功'
+              });
+              that.getDoctorAll();
+            }
+          }).catch(error=>{
+           // //alert("失败")
+          })
+
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '取消输入'
+          });
+        })
+      },
       resetForm(formName) {
         //重置表单
          if(formName == "meConditionForm"){
@@ -580,6 +799,14 @@
         this.sectionCondition.pageSize = 10;
         this.getSectionAll();
       },
+      historyPage(val){
+        this.hisPage.page = val;
+        this.getMedicalHistoryAll();
+      },
+      orderPage(val){
+        this.ordPage.page = val;
+        this.getOrderAll();
+      },
       reMe(obj){
         // 编辑药品弹窗打开
         this.editMe = true;
@@ -604,7 +831,7 @@
             console.log("section/getDepartmentAll  失败")
           }
         }).catch(error=>{
-          alert("失败")
+         // //alert("失败")
         })
       },
       insertMedicineClick(formName){
@@ -638,7 +865,7 @@
                 console.log("section/insertMedicine  失败")
               }
             }).catch(error=>{
-              alert("失败")
+             // //alert("失败")
             })
           }
         })
@@ -678,7 +905,7 @@
                 console.log("section/insertMedicine  失败")
               }
             }).catch(error=>{
-              alert("失败")
+             // //alert("失败")
             })
           }
         })
@@ -704,7 +931,7 @@
             }
           }
         }).catch(error=>{
-          alert("失败")
+          //alert("失败")
         })
       },
       getDepartmentAll(){
@@ -720,7 +947,7 @@
             console.log("section/getDepartmentAll  失败")
           }
         }).catch(error=>{
-          alert("失败")
+          //alert("失败")
         })
       },
       getSectionByDepartmentId(id){
@@ -736,7 +963,7 @@
             console.log("section/getSectionByDepartmentId  失败")
           }
         }).catch(error=>{
-          alert("失败")
+          //alert("失败")
         })
       },
       activeDoctor(id){
@@ -756,7 +983,7 @@
             }
           })
           .catch((error) => {
-            alert("失败");
+            //alert("失败");
           });
       },
       activeFunc(idx) {
@@ -767,25 +994,63 @@
             this.doctorAc = false;
             this.meAc = false;
             this.seAc = false;
+            this.doAc = false;
+            this.orderAc = false;
+            this.historyAc = false;
             break;
           case 2:
             this.userAc = false;
             this.doctorAc = true;
             this.meAc = false;
             this.seAc = false;
+            this.doAc = false;
+            this.orderAc = false;
+            this.historyAc = false;
             break;
           case 3:
             this.userAc = false;
             this.doctorAc = false;
             this.meAc = true;
             this.seAc = false;
+            this.doAc = false;
+            this.orderAc = false;
+            this.historyAc = false;
             break;
           case 4:
             this.userAc = false;
             this.doctorAc = false;
             this.meAc = false;
             this.seAc = true;
+            this.orderAc = false;
+            this.historyAc = false;
             break;
+          case 5:
+            this.userAc = false;
+            this.doctorAc = false;
+            this.meAc = false;
+            this.seAc = false;
+            this.doAc = true;
+            this.orderAc = false;
+            this.historyAc = false;
+            break;
+          case 6:
+            this.userAc = false;
+            this.doctorAc = false;
+            this.meAc = false;
+            this.seAc = false;
+            this.doAc = false;
+            this.orderAc = true;
+            this.historyAc = false;
+            break;
+        case 7:
+          this.userAc = false;
+          this.doctorAc = false;
+          this.meAc = false;
+          this.seAc = false;
+          this.doAc = false;
+          this.orderAc = false;
+          this.historyAc = true;
+          break;
         }
         if (this.userAc) {
           var that = this;
@@ -799,7 +1064,7 @@
               }
             })
             .catch((error) => {
-              alert("失败");
+              //alert("失败");
             });
         }
         if (this.doctorAc) {
@@ -818,7 +1083,7 @@
               that.doctors = response.data.data;
             }
           }).catch(error=>{
-            alert("失败")
+            //alert("失败")
           })
         }
         if (this.meAc) {
@@ -837,7 +1102,7 @@
 //              }
 //            })
 //            .catch((error) => {
-//              alert("失败");
+//              //alert("失败");
 //            });
         }
         if(this.seAc){
@@ -878,7 +1143,7 @@
             }
           })
           .catch((error) => {
-            alert("失败");
+            //alert("失败");
           });
       },
       edit(obj) {
@@ -902,7 +1167,7 @@
             }
           })
           .catch((error) => {
-            alert("失败");
+            //alert("失败");
           });
       },
       handleClose(done) {
@@ -943,7 +1208,7 @@
             }
           })
           .catch((error) => {
-            alert("失败");
+            //alert("失败");
           });
       },
       getSectionAll(){
@@ -957,7 +1222,6 @@
           url: "section/getSectionAll",
           data:data
         }).then(response=>{
-          console.log(response)
           if(response.data.code == 200 ){
             that.sectionData = response.data.data;
           }else{
@@ -967,12 +1231,67 @@
             }
           }
         }).catch(error=>{
-          alert("失败")
+          //alert("失败")
+        })
+      },
+      getDoctorAll(){
+        axios({
+          method: "get",
+          url: "/doctor/getDoctorAndResource",
+        })
+          .then((response) => {
+            if (response.data.code == 200) {
+              this.doctorAndResource = response.data.data;
+            }
+          })
+          .catch((error) => {
+            //alert("失败");
+          });
+      },
+      getMedicalHistoryAll(){
+        var that = this;
+        var data = JSON.stringify(that.hisPage)
+        axios({
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          method: 'post',
+          url: "medicalHistory/getMedicalHistoryAll",
+          data:data
+        }).then(response=>{
+          console.log(response)
+          if(response.data.code == 200 ){
+            that.hisData = response.data.data;
+          }
+        }).catch(error=>{
+          //alert("失败")
+        })
+      },
+      getOrderAll(){
+        var that = this;
+        var data = JSON.stringify(that.ordPage)
+        axios({
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          method: 'post',
+          url: "medicineOrder/getOrderAll",
+          data:data
+        }).then(response=>{
+          console.log(response)
+          if(response.data.code == 200 ){
+            that.orderData = response.data.data;
+          }
+        }).catch(error=>{
+          //alert("失败")
         })
       }
     },
     mounted() {
       this.init();
+      this.getDoctorAll();
+      this.getMedicalHistoryAll();
+      this.getOrderAll();
     },
   };
 </script>

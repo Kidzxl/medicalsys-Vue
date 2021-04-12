@@ -11,6 +11,11 @@
               <el-table-column
                 prop="userName"
                 label="病人名字">
+                <template slot-scope="nameScope" >
+                  <div>
+                    <el-button type="text" size="small"  @click="showDetail(nameScope.row)">{{nameScope.row.userName}}</el-button>
+                  </div>
+                </template>
               </el-table-column>
               <el-table-column
                 prop="illness"
@@ -38,6 +43,17 @@
                 </template>
               </el-table-column>
             </el-table>
+            <div>
+              <el-pagination
+                :hide-on-single-page="true"
+                background
+                @current-change="noPage"
+                :current-page="1"
+                layout="prev, pager, next"
+                :page-size="10"
+                :total="noHistory.totalSize">
+              </el-pagination>
+            </div>
           </el-tab-pane>
           <el-tab-pane label="处理中">
             <el-table
@@ -47,6 +63,11 @@
               <el-table-column
                 prop="userName"
                 label="病人名字">
+                <template slot-scope="nameScope" >
+                  <div>
+                    <el-button type="text" size="small"  @click="showDetail(nameScope.row)">{{nameScope.row.userName}}</el-button>
+                  </div>
+                </template>
               </el-table-column>
               <el-table-column
                 prop="illness"
@@ -74,6 +95,17 @@
                 </template>
               </el-table-column>
             </el-table>
+            <div>
+              <el-pagination
+                :hide-on-single-page="true"
+                background
+                @current-change="doingPage"
+                :current-page="1"
+                layout="prev, pager, next"
+                :page-size="10"
+                :total="doingHistory.totalSize">
+              </el-pagination>
+            </div>
           </el-tab-pane>
           <el-tab-pane label="处理完成">
             <el-table
@@ -83,6 +115,11 @@
               <el-table-column
                 prop="userName"
                 label="病人名字">
+                <template slot-scope="nameScope" >
+                  <div>
+                    <el-button type="text" size="small"  @click="showDetail(nameScope.row)">{{nameScope.row.userName}}</el-button>
+                  </div>
+                </template>
               </el-table-column>
               <el-table-column
                 prop="illness"
@@ -110,9 +147,29 @@
                 </template>
               </el-table-column>
             </el-table>
+            <div>
+              <el-pagination
+                :hide-on-single-page="true"
+                background
+                @current-change="completePage"
+                :current-page="1"
+                layout="prev, pager, next"
+                :page-size="10"
+                :total="complete.totalSize">
+              </el-pagination>
+            </div>
           </el-tab-pane>
         </el-tabs>
       </div>
+      <el-dialog
+        title="病人信息"
+        :visible.sync="userDetailsAc"
+        width="20%">
+        <div>用户名:{{userDetail.userName}}</div>
+        <div>身份证:{{userDetail.card}}</div>
+        <div>性  别:{{userDetail.sex}}</div>
+        <div>年龄:{{userDetail.age}}</div>
+      </el-dialog>
       <el-dialog
         title="提示"
         :visible.sync="historyAc"
@@ -132,6 +189,7 @@
                 :options="medicineLinkage"
                 :props="{ multiple: true }"
                 v-model="medicineValue"
+                filterable
                 clearable></el-cascader>
             </div>
           </div>
@@ -196,11 +254,11 @@
                 historyAc:false,
                 noHistory:{
                     result:[],
-                    total:0,
+                    totalSize:0,
                 },
                 doingHistory:{
                   result:[],
-                  total:0,
+                  totalSize:0,
                 },
                 medicineValue:null,
                 doNoHistory:{
@@ -214,7 +272,7 @@
                 },
               complete:{
                   result:[],
-                  total:0,
+                totalSize:0,
               },
                 noPageVo:{
                     page:1,
@@ -224,10 +282,17 @@
                     page:1,
                     pageSize:10,
                 },
-              comPageVo:{
-                    page:1,
-                    pageSize:10,
-                }
+              comPageVo: {
+                page: 1,
+                pageSize: 10,
+              },
+              userDetail:{
+                userName:null,
+                  age:null,
+                  sex:null,
+                  card:null,
+              },
+              userDetailsAc:false,
             };
         },
         //监听属性 类似于data概念",
@@ -246,6 +311,22 @@
         },
         //方法集合",
         methods: {
+          showDetail(obj){
+            this.userDetail = obj;
+            this.userDetailsAc = true;
+          },
+          completePage(val){
+            this.comPageVo.page = val;
+            this.getMedicalHistoryComplete();
+          },
+          doingPage(val){
+            this.doingHistory.page = val;
+            this.getMedicalHistoryDoing();
+          },
+          noPage(val){
+              this.noPageVo.page = val;
+            this.getMedicalHistoryDay();
+          },
           submitDo(status){
             this.doNoHistory.status = status;
             console.log(this.doNoHistory)
