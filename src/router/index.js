@@ -7,6 +7,8 @@ import Doctor from '@/views/Doctor'
 import Patient from '@/views/Patient'
 import Header from '@/views/Header'
 import Index from '@/views/Index'
+import Contact from '@/views/Contact'
+import Departments from '@/views/Departments'
 
 Vue.use(Router)
 
@@ -40,6 +42,14 @@ export default new Router({
     path:'/',
     name:"Index",
     component: Index
+    },{
+    path:'/contact',
+    name:"Contact",
+    component: Contact
+    },{
+    path:'/departments',
+    name:"Departments",
+    component: Departments
     }
   ]
 })

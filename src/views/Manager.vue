@@ -313,13 +313,13 @@
               </template>
             </el-table-column>
             <el-table-column
-              prop="doctorVo"
+              width="200"
               label="资源上限">
-              <template slot-scope="resourcesScope">
-                <span>{{resourcesScope.row.resources.upperLimit}}</span>
+              <template slot-scope="rew">
+                <span>{{rew.row.resources.upperLimit}}</span>
               </template>
             </el-table-column>
-            <el-table-column prop="id" label="操作">
+            <el-table-column prop="id" label="操作" width="200">
               <template slot-scope="editScope">
                 <el-button
                   @click="editResource(editScope.row)"
@@ -587,7 +587,14 @@
 
         };
       return {
-        doctorAndResource:null,
+        doctorAndResource:[{
+          doctorVo:{
+
+          },
+          resources:{
+            upperLimit:0
+          }
+        }],
         editMe:false,
         userList: null,
         orderList: null,
@@ -737,7 +744,6 @@
           inputErrorMessage: '请输入正整数'
         }).then(({value}) => {
           obj.resources.upperLimit = value;
-
           var data = JSON.stringify(obj);
           axios({
             headers: {
@@ -1089,21 +1095,6 @@
         if (this.meAc) {
             this.getMedicineAll();
             this.getDepartmentAll();
-
-//          var that = this;
-//          axios({
-//            method: "get",
-//            url: "/product/getProductAll",
-//          })
-//            .then((response) => {
-//              console.log(response);
-//              if (response.data.code == 200) {
-//                that.productList = response.data.data;
-//              }
-//            })
-//            .catch((error) => {
-//              //alert("失败");
-//            });
         }
         if(this.seAc){
           this.getDepartmentAll();
@@ -1235,13 +1226,13 @@
         })
       },
       getDoctorAll(){
+        var that = this;
         axios({
           method: "get",
           url: "/doctor/getDoctorAndResource",
-        })
-          .then((response) => {
-            if (response.data.code == 200) {
-              this.doctorAndResource = response.data.data;
+        }).then((response) => {
+            if (response.data.code === 200) {
+              that.doctorAndResource = response.data.data;
             }
           })
           .catch((error) => {

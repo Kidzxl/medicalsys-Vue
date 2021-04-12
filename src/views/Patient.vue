@@ -345,6 +345,7 @@
                 url: "pay",
                 data:data
               }).then(response=>{
+                console.log(response)
                 var myWindow = window.open('','width=200,height=100');
                 myWindow.document.write(response.data)
                 this.czCard = false;

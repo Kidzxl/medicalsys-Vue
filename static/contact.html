@@ -59,12 +59,12 @@
 
           <div class="col-12 col-md-10 d-none d-xl-block">
             <nav class="site-navigation position-relative text-right" role="navigation">
-
               <ul class="site-menu main-menu js-clone-nav mr-auto d-none d-lg-block">
-                <li><a href="index.html" class="nav-link">主页</a></li>
-                <li><a href="departments.html" class=" nav-link">部门</a></li>
-                <li><a href="contact.html" class="nav-link active">联系我们</a></li>
-                <li><a href="/login" class="nav-link ">加入我们</a></li>
+                <li><a onclick="window.top.location='/'" class="nav-link " style="  cursor: pointer;">主页</a></li>
+<!--                <li><a onclick="window.top.location='/departments'" class="nav-link" style="  cursor: pointer;">部门</a></li>-->
+                <!--                <li><a href="about.html" class="nav-link">关于我们</a></li>-->
+                <li><a onclick="window.top.location='/contact'" class="nav-link active" style="  cursor: pointer;">联系我们</a></li>
+                <li><a onclick="window.top.location='/login'" class="nav-link" style="  cursor: pointer;">登录/注册</a></li>
               </ul>
             </nav>
           </div>
@@ -85,7 +85,7 @@
       <div class="container">
         <div class="row">
           <div class="col-lg-6 align-self-center text-center mx-auto">
-            <h1 class="heading mb-5">Contact Us</h1>
+            <h1 class="heading mb-5">联系我们</h1>
             <!--<p><a href="#" class="btn btn-primary">Get started</a></p>-->
           </div>
         </div>
@@ -96,6 +96,7 @@
     <div class="site-section pb-0">
       <div class="container">
         <div class="row mb-5">
+          <div class="col-md-3"></div>
           <div class="col-md-7 pr-md-7 mb-5">
             <div>
               <div class="form-group">
@@ -115,29 +116,7 @@
               </div>
             </div>
           </div>
-          <div class="col-md-5">
-            <div class="media block-icon-1 d-block text-center">
-              <div class="icon mb-3"><span class="icon-room text-primary"></span></div>
-              <div class="media-body">
-                <h3 class="h5 mb-4">Arthur Bldg flr, New York City, USA</h3>
-              </div>
-            </div> <!-- .block-icon-1 -->
-
-            <div class="media block-icon-1 d-block text-center">
-              <div class="icon mb-3"><span class="icon-phone text-primary"></span></div>
-              <div class="media-body">
-                <h3 class="h5 mb-4">+1 209 923 2302</h3>
-              </div>
-            </div> <!-- .block-icon-1 -->
-
-            <div class="media block-icon-1 d-block text-center">
-              <div class="icon mb-3"><span class="icon-envelope text-primary"></span></div>
-              <div class="media-body">
-                <h3 class="h5 mb-4">info@templateux.com</h3>
-              </div>
-            </div> <!-- .block-icon-1 -->
-
-          </div>
+          <div class="col-md-2"></div>
         </div> <!-- .row -->
 
       </div>
@@ -197,18 +176,6 @@
             </form>
           </div>
         </div>
-        <div class="row pt-5 mt-5 text-center">
-          <div class="col-md-12">
-            <div class="border-top pt-5">
-              <p class="copyright"><small>
-                <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-                Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="icon-heart text-danger" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank" >Colorlib</a>
-                <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. --></small></p>
-
-              </div>
-            </div>
-
-          </div>
         </div>
       </footer>
 
