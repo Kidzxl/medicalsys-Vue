@@ -233,13 +233,13 @@
                 </el-select>
               </el-form-item>
               <el-form-item>
-                <el-button type="primary" icon="el-icon-search" @click="getSectionAll">搜索</el-button>
+                <el-button type="primary" icon="el-icon-search" @click="sePage(0)">搜索</el-button>
               </el-form-item>
               <el-form-item>
                 <el-button @click="resetForm('seForm')">重置</el-button>
               </el-form-item>
               <el-form-item>
-                  <el-button type="primary" @click="insertMedicine = true" >增加科室</el-button>
+                  <el-button type="primary" @click="addSectionFlag = true" >增加科室</el-button>
               </el-form-item>
             </el-form>
           </div>
@@ -265,7 +265,7 @@
               <el-table-column prop="id" label="操作">
                 <template slot-scope="seScope">
                   <el-button
-                    @click="deleteMe(seScope.row.id)"
+                    @click="deleteSection(seScope.row.id)"
                     type="text"
                     size="small">删除</el-button>
                 </template>
@@ -527,6 +527,28 @@
         </el-form>
       </div>
     </el-dialog>
+    <el-dialog title="增加科室" :visible.sync="addSectionFlag">
+      <div>
+        <el-form :model="addSectionData" :inline="true"  >
+          <el-form-item label="部门" prop="department">
+            <el-select v-model="addSectionData.departmentId" placeholder="请选择部门" style="width: 150px;">
+              <el-option
+                v-for="department in departments"
+                :key="department.id"
+                :label="department.departmentName"
+                :value="department.id">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="科室" prop="section">
+            <el-input v-model="addSectionData.sectionName" placeholder="输入科室名字"></el-input>
+          </el-form-item>
+            <div style="margin-left: 25%">
+              <el-button type="primary" style="width:400px;" @click="addSection">提交</el-button>
+            </div>
+        </el-form>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -595,6 +617,11 @@
             upperLimit:0
           }
         }],
+        addSectionData:{
+          departmentId:null,
+          sectionName:null,
+        },
+        addSectionFlag:false,
         editMe:false,
         userList: null,
         orderList: null,
@@ -715,7 +742,7 @@
       "meCondition.departmentId": {
         handler(newValue){
           this.meCondition.sectionId = null;
-          if(this.meCondition.departmentId != null && this.meCondition.departmentId != 0 ){
+          if(this.meCondition.departmentId != null && this.meCondition.departmentId !== 0 ){
             this.getSectionByDepartmentId(this.meCondition.departmentId);
           }
 
@@ -732,6 +759,53 @@
       },
     },
     methods: {
+      deleteSection(id){
+//删除药品
+        var that = this;
+        axios({
+          method: 'delete',
+          url: "section/deletedSection/"+id,
+        }).then(response=>{
+          if(response.data.code == 200 ){
+            this.$message({
+              message: '删除成功',
+              type: 'success'
+            });
+            that.sePage(0);
+          }else{
+            console.log("section/getSectionAll  失败")
+          }
+        }).catch(error=>{
+          // //alert("失败")
+        })
+      },
+      addSection(){
+        var that = this;
+        console.log(this.addSectionData)
+        if(this.addSectionData.sectionName == null || this.addSectionData.sectionName === "" || this.addSectionData.departmentId === null){
+           alert("请完善输入信息")
+        }else{
+          axios({
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            method: 'post',
+            url: "section/addSection",
+            data:JSON.stringify(that.addSectionData)
+          }).then(response=>{
+            if(response.data.code === 200 ){
+              this.$message({
+                type: 'success',
+                message: '新增成功'
+              });
+              that.sePage(0);
+              that.addSectionFlag = false;
+            }
+          }).catch(error=>{
+            // //alert("失败")
+          })
+        }
+      },
       loginOut(){
         this.$router.push("/login")
       },
